@@ -6,5 +6,10 @@ Experiment to understand how to get delta tables working with a local instance o
 
 ```sh
 poetry install
-poetry run inv ci
+
+# This will run zero tests
+poetry run inv test
+
+# this will run only tests marked as 'spark'
+poetry run inv test-spark
 ```

@@ -1,9 +1,10 @@
 # Standard Library
 import shutil
 from pathlib import Path
-import pytest
 
 # Third Party
+import pytest
+from delta import DeltaTable
 from pyspark.sql.types import (  # Row,
     DecimalType,
     IntegerType,
@@ -40,11 +41,21 @@ def test_spark_delta_transform(spark, spark_logger):
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name} LOCATION '{location}'")
 
     # When
-    df.write.format("delta").partitionBy(*partition_by).saveAsTable(qualified_table_name)
+    # OPTION #1: Save an empty dataframe with the specified schema
+    #  df.write.format("delta").partitionBy(*partition_by).saveAsTable(qualified_table_name)
+
+    # OPTION #2: Use the DeltaTableBuilder
+    # fmt: off
+    (DeltaTable.createOrReplace(spark)
+        .tableName(qualified_table_name)
+        .addColumns(df.schema)
+        .partitionedBy(*partition_by)
+        .execute())
+    # fmt: on
 
     # Then
     df2 = spark.sql(f"SELECT * FROM {qualified_table_name}")
     df2.show()
 
     # Cleanup
-    shutil.rmtree("spark-warehouse" / Path(location), ignore_errors=True)
+    #  shutil.rmtree("spark-warehouse" / Path(location), ignore_errors=True)
