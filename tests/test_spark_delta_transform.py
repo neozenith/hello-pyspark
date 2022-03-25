@@ -35,20 +35,19 @@ def test_spark_delta_transform(spark, spark_logger):
 
     shutil.rmtree("spark-warehouse" / Path(location), ignore_errors=True)
 
-    df = spark.createDataFrame([], schema)
-    df.show()
-
     spark.sql(f"CREATE DATABASE IF NOT EXISTS {database_name} LOCATION '{location}'")
 
     # When
     # OPTION #1: Save an empty dataframe with the specified schema
+    #  df = spark.createDataFrame([], schema)
+    #  df.show()
     #  df.write.format("delta").partitionBy(*partition_by).saveAsTable(qualified_table_name)
 
     # OPTION #2: Use the DeltaTableBuilder
     # fmt: off
     (DeltaTable.createOrReplace(spark)
         .tableName(qualified_table_name)
-        .addColumns(df.schema)
+        .addColumns(schema)
         .partitionedBy(*partition_by)
         .execute())
     # fmt: on
@@ -58,4 +57,4 @@ def test_spark_delta_transform(spark, spark_logger):
     df2.show()
 
     # Cleanup
-    #  shutil.rmtree("spark-warehouse" / Path(location), ignore_errors=True)
+    shutil.rmtree("spark-warehouse" / Path(location), ignore_errors=True)
