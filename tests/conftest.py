@@ -1,13 +1,12 @@
 # Third Party
-# About pytest fixtures
-# https://docs.pytest.org/en/latest/how-to/fixtures.html#how-to-fixtures
-# Third Party
 from delta import DeltaTable, configure_spark_with_delta_pip  # noqa
 from pyspark.sql import SparkSession
 from pytest import fixture
 
 
-@fixture
+# About pytest fixtures
+# https://docs.pytest.org/en/latest/how-to/fixtures.html#how-to-fixtures
+@fixture(scope="session")
 def spark():
     """Start a local pyspark instance to test against."""
     # Setup

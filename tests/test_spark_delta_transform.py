@@ -1,6 +1,7 @@
 # Standard Library
 import shutil
 from pathlib import Path
+import pytest
 
 # Third Party
 from pyspark.sql.types import (  # Row,
@@ -13,6 +14,7 @@ from pyspark.sql.types import (  # Row,
 )
 
 
+@pytest.mark.spark
 def test_spark_delta_transform(spark, spark_logger):
     # Given
     schema_mapping = {
